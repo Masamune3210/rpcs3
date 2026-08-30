@@ -59,6 +59,7 @@
         "USE_SYSTEM_ZLIB": "OFF",
         "USE_SYSTEM_OPENAL": "OFF",
         "USE_SYSTEM_OPENCV": "OFF",
+        "USE_SYSTEM_SDL": "OFF",
         "BUILD_LLVM": "ON",
         "STATIC_LINK_LLVM": "ON"
       },
