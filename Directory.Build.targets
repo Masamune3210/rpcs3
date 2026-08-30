@@ -12,9 +12,9 @@
   </ItemDefinitionGroup>
 
   <Target Name="RpcS3DeployRuntime" AfterTargets="Build" Condition="'$(MSBuildProjectName)' == 'rpcs3' And Exists('$(TargetPath)')">
-    <Message Importance="High" Text="Deploying Qt runtime for $(TargetPath)" />
+    <Message Importance="High" Text="Deploying Qt runtime for $(TargetPath) to $(TargetDir)" />
     <Error Condition="!Exists('$(QTDIR)\bin\windeployqt6.exe')" Text="windeployqt6.exe was not found under QTDIR: $(QTDIR)" />
-    <Exec Command="&quot;$(QTDIR)\bin\windeployqt6.exe&quot; --no-compiler-runtime --no-opengl-sw --no-patchqt --no-system-d3d-compiler --no-system-dxc-compiler --no-quick-import --plugindir &quot;$(TargetDir)qt6\plugins&quot; --translationdir &quot;$(TargetDir)qt6\translations&quot; $(RpcS3QtDeployMode) &quot;$(TargetPath)&quot;" />
+    <Exec Command="&quot;$(QTDIR)\bin\windeployqt6.exe&quot; --verbose 2 --dir &quot;$(TargetDir)&quot; --no-compiler-runtime --no-opengl-sw --no-patchqt --no-system-d3d-compiler --no-system-dxc-compiler --no-quick-import --plugindir &quot;$(TargetDir)qt6\plugins&quot; --translationdir &quot;$(TargetDir)qt6\translations&quot; $(RpcS3QtDeployMode) &quot;$(TargetPath)&quot;" />
     <Error Condition="!Exists('$(TargetDir)Qt6Core.dll')" Text="Qt deployment completed without producing $(TargetDir)Qt6Core.dll" />
     <Error Condition="!Exists('$(TargetDir)qt6\plugins\platforms\qwindows.dll')" Text="Qt deployment completed without producing the Windows platform plugin." />
     <Error Condition="!Exists('$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll')" Text="OpenCV runtime was not found at $(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" />
@@ -22,9 +22,9 @@
   </Target>
 
   <Target Name="RpcS3TestDeployRuntime" AfterTargets="Build" Condition="'$(MSBuildProjectName)' == 'rpcs3_test' And Exists('$(TargetPath)')">
-    <Message Importance="High" Text="Deploying Qt runtime for $(TargetPath)" />
+    <Message Importance="High" Text="Deploying Qt runtime for $(TargetPath) to $(TargetDir)" />
     <Error Condition="!Exists('$(QTDIR)\bin\windeployqt6.exe')" Text="windeployqt6.exe was not found under QTDIR: $(QTDIR)" />
-    <Exec Command="&quot;$(QTDIR)\bin\windeployqt6.exe&quot; --no-compiler-runtime --no-opengl-sw --no-patchqt --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-ffmpeg --no-quick-import --plugindir &quot;$(TargetDir)qt6\plugins&quot; $(RpcS3QtDeployMode) &quot;$(TargetPath)&quot;" />
+    <Exec Command="&quot;$(QTDIR)\bin\windeployqt6.exe&quot; --verbose 2 --dir &quot;$(TargetDir)&quot; --no-compiler-runtime --no-opengl-sw --no-patchqt --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-ffmpeg --no-quick-import --plugindir &quot;$(TargetDir)qt6\plugins&quot; $(RpcS3QtDeployMode) &quot;$(TargetPath)&quot;" />
     <Error Condition="!Exists('$(TargetDir)Qt6Core.dll')" Text="Qt deployment completed without producing $(TargetDir)Qt6Core.dll" />
     <Error Condition="!Exists('$(TargetDir)qt6\plugins\platforms\qwindows.dll')" Text="Qt deployment completed without producing the Windows platform plugin." />
     <Error Condition="!Exists('$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll')" Text="OpenCV runtime was not found at $(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" />
