@@ -4,7 +4,7 @@
     <RpcS3QtDeployMode Condition="'$(Configuration)' != 'Debug'">--release</RpcS3QtDeployMode>
   </PropertyGroup>
 
-  <!-- Disable the stale vcxproj post-build commands. Qt 6.10 rejects --no-quick. -->
+  <!-- Disable the stale vcxproj post-build commands. Qt 6.10 rejects no-quick. -->
   <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'rpcs3' Or '$(MSBuildProjectName)' == 'rpcs3_test'">
     <PostBuildEvent>
       <Command></Command>
