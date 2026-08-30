@@ -37,7 +37,8 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <CmakeGenerator>"Visual Studio $(VisualStudioVersion.Substring(0,2))"</CmakeGenerator>
+    <CmakeGenerator Condition="'$(VisualStudioVersion.Substring(0,2))' == '17'">"Visual Studio 17 2022"</CmakeGenerator>
+    <CmakeGenerator Condition="'$(VisualStudioVersion.Substring(0,2))' == '18'">"Visual Studio 18 2026"</CmakeGenerator>
     <CmakeReleaseCLI>call vsdevcmd.bat -arch=amd64
       cmake -G $(CmakeGenerator) -A x64 ^
         -DCMAKE_BUILD_TYPE="Release" ^
