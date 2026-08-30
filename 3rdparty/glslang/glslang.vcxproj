@@ -39,8 +39,10 @@
   <PropertyGroup Label="UserMacros">
     <CmakeGenerator Condition="'$(VisualStudioVersion.Substring(0,2))' == '17'">"Visual Studio 17 2022"</CmakeGenerator>
     <CmakeGenerator Condition="'$(VisualStudioVersion.Substring(0,2))' == '18'">"Visual Studio 18 2026"</CmakeGenerator>
+    <CmakeExecutable Condition="Exists('$(DevEnvDir)CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe')">"$(DevEnvDir)CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"</CmakeExecutable>
+    <CmakeExecutable Condition="'$(CmakeExecutable)' == ''">cmake</CmakeExecutable>
     <CmakeReleaseCLI>call vsdevcmd.bat -arch=amd64
-      cmake -G $(CmakeGenerator) -A x64 ^
+      $(CmakeExecutable) -G $(CmakeGenerator) -A x64 ^
         -DCMAKE_BUILD_TYPE="Release" ^
         -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ^
         -DGLSLANG_TESTS=OFF ^
@@ -53,7 +55,7 @@
         -B "$(SolutionDir)build\tmp\$(ProjectName)-$(Configuration)-$(Platform)"
     </CmakeReleaseCLI>
     <CmakeDebugCLI>call vsdevcmd.bat -arch=amd64
-      cmake -G $(CmakeGenerator) -A x64 ^
+      $(CmakeExecutable) -G $(CmakeGenerator) -A x64 ^
         -DCMAKE_BUILD_TYPE="Debug" ^
         -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDebug ^
         -DGLSLANG_TESTS=OFF ^
@@ -92,11 +94,7 @@
       msbuild.exe "$(IntDir)\ALL_BUILD.vcxproj" /t:rebuild /p:Configuration=Release /p:ForceImportBeforeCppTargets="$(PropsAbsPath)" /m
       $(CmakeCopyCLI)
     </NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>
-      $(CmakeReleaseCLI)
-      msbuild.exe "$(IntDir)\ALL_BUILD.vcxproj" /t:clean /p:Configuration=Release /p:ForceImportBeforeCppTargets="$(PropsAbsPath)" /m
-      $(CmakeCleanCLI)
-    </NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>$(CmakeCleanCLI)</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)build\lib\$(Configuration)-$(Platform)\</OutDir>
@@ -111,11 +109,7 @@
       msbuild.exe "$(IntDir)\ALL_BUILD.vcxproj" /t:rebuild /p:Configuration=Debug /p:ForceImportBeforeCppTargets="$(PropsAbsPath)" /m
       $(CmakeCopyCLI)
     </NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>
-      $(CmakeDebugCLI)
-      msbuild.exe "$(IntDir)\ALL_BUILD.vcxproj" /t:clean /p:Configuration=Debug /p:ForceImportBeforeCppTargets="$(PropsAbsPath)" /m
-      $(CmakeCleanCLI)
-    </NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>$(CmakeCleanCLI)</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
