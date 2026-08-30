@@ -1,32 +1,33 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!--
-    The Visual Studio projects historically carry their Qt deployment commands
-    directly in the .vcxproj files. Keep the effective post-build command here
-    so it is evaluated after the project definitions by Microsoft.Common.targets.
-
-    Qt 6.10 no longer accepts --no-quick. Also stop immediately if deployment
-    fails instead of allowing the following xcopy command to mask the failure.
-  -->
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'rpcs3' Or '$(MSBuildProjectName)' == 'rpcs3_test'">
     <RpcS3QtDeployMode Condition="'$(Configuration)' == 'Debug'">--debug</RpcS3QtDeployMode>
     <RpcS3QtDeployMode Condition="'$(Configuration)' != 'Debug'">--release</RpcS3QtDeployMode>
   </PropertyGroup>
 
-  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'rpcs3'">
+  <!-- Disable the stale vcxproj post-build commands. Qt 6.10 rejects --no-quick. -->
+  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'rpcs3' Or '$(MSBuildProjectName)' == 'rpcs3_test'">
     <PostBuildEvent>
-      <Command>"$(QTDIR)\bin\windeployqt6.exe" --no-compiler-runtime --no-opengl-sw --no-patchqt --no-system-d3d-compiler --no-system-dxc-compiler --no-quick-import --plugindir "$(TargetDir)qt6\plugins" --translationdir "$(TargetDir)qt6\translations" $(RpcS3QtDeployMode) "$(TargetPath)"
-if errorlevel 1 exit /b 1
-xcopy /y /d "$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" "$(OutDir)"
-if errorlevel 1 exit /b 1</Command>
+      <Command></Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
-  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'rpcs3_test'">
-    <PostBuildEvent>
-      <Command>"$(QTDIR)\bin\windeployqt6.exe" --no-compiler-runtime --no-opengl-sw --no-patchqt --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-ffmpeg --no-quick-import --plugindir "$(TargetDir)qt6\plugins" $(RpcS3QtDeployMode) "$(TargetPath)"
-if errorlevel 1 exit /b 1
-xcopy /y /d "$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" "$(OutDir)"
-if errorlevel 1 exit /b 1</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
+  <Target Name="RpcS3DeployRuntime" AfterTargets="Build" Condition="'$(MSBuildProjectName)' == 'rpcs3' And Exists('$(TargetPath)')">
+    <Message Importance="High" Text="Deploying Qt runtime for $(TargetPath)" />
+    <Error Condition="!Exists('$(QTDIR)\bin\windeployqt6.exe')" Text="windeployqt6.exe was not found under QTDIR: $(QTDIR)" />
+    <Exec Command="&quot;$(QTDIR)\bin\windeployqt6.exe&quot; --no-compiler-runtime --no-opengl-sw --no-patchqt --no-system-d3d-compiler --no-system-dxc-compiler --no-quick-import --plugindir &quot;$(TargetDir)qt6\plugins&quot; --translationdir &quot;$(TargetDir)qt6\translations&quot; $(RpcS3QtDeployMode) &quot;$(TargetPath)&quot;" />
+    <Error Condition="!Exists('$(TargetDir)Qt6Core.dll')" Text="Qt deployment completed without producing $(TargetDir)Qt6Core.dll" />
+    <Error Condition="!Exists('$(TargetDir)qt6\plugins\platforms\qwindows.dll')" Text="Qt deployment completed without producing the Windows platform plugin." />
+    <Error Condition="!Exists('$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll')" Text="OpenCV runtime was not found at $(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" />
+    <Copy SourceFiles="$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="RpcS3TestDeployRuntime" AfterTargets="Build" Condition="'$(MSBuildProjectName)' == 'rpcs3_test' And Exists('$(TargetPath)')">
+    <Message Importance="High" Text="Deploying Qt runtime for $(TargetPath)" />
+    <Error Condition="!Exists('$(QTDIR)\bin\windeployqt6.exe')" Text="windeployqt6.exe was not found under QTDIR: $(QTDIR)" />
+    <Exec Command="&quot;$(QTDIR)\bin\windeployqt6.exe&quot; --no-compiler-runtime --no-opengl-sw --no-patchqt --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-ffmpeg --no-quick-import --plugindir &quot;$(TargetDir)qt6\plugins&quot; $(RpcS3QtDeployMode) &quot;$(TargetPath)&quot;" />
+    <Error Condition="!Exists('$(TargetDir)Qt6Core.dll')" Text="Qt deployment completed without producing $(TargetDir)Qt6Core.dll" />
+    <Error Condition="!Exists('$(TargetDir)qt6\plugins\platforms\qwindows.dll')" Text="Qt deployment completed without producing the Windows platform plugin." />
+    <Error Condition="!Exists('$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll')" Text="OpenCV runtime was not found at $(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" />
+    <Copy SourceFiles="$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
