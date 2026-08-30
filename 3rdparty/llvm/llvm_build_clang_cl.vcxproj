@@ -10,6 +10,9 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup>
+    <BuildInSolution>false</BuildInSolution>
+  </PropertyGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A37E4273-85DB-4217-B775-CE971B87D9DF}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
