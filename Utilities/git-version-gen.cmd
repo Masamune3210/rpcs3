@@ -22,7 +22,7 @@ rem // Try to get git path from environment variable
 set GIT_VERSION_FILE=%~p0..\rpcs3\git-version.h
 if not defined GIT (
 	echo GIT not defined, using git as command.
-	set GIT='git'
+	set "GIT=git"
 	echo PATH is:
 	echo "%PATH%"
 ) else (
@@ -185,5 +185,5 @@ echo #define RPCS3_GIT_VERSION_NO_UPDATE 0 >> "%GIT_VERSION_FILE%"
 :done
 
 echo File is:
-more %GIT_VERSION_FILE%
+more "%GIT_VERSION_FILE%"
 echo File end
