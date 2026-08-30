@@ -1,0 +1,32 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    The Visual Studio projects historically carry their Qt deployment commands
+    directly in the .vcxproj files. Keep the effective post-build command here
+    so it is evaluated after the project definitions by Microsoft.Common.targets.
+
+    Qt 6.10 no longer accepts --no-quick. Also stop immediately if deployment
+    fails instead of allowing the following xcopy command to mask the failure.
+  -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'rpcs3' Or '$(MSBuildProjectName)' == 'rpcs3_test'">
+    <RpcS3QtDeployMode Condition="'$(Configuration)' == 'Debug'">--debug</RpcS3QtDeployMode>
+    <RpcS3QtDeployMode Condition="'$(Configuration)' != 'Debug'">--release</RpcS3QtDeployMode>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'rpcs3'">
+    <PostBuildEvent>
+      <Command>"$(QTDIR)\bin\windeployqt6.exe" --no-compiler-runtime --no-opengl-sw --no-patchqt --no-system-d3d-compiler --no-system-dxc-compiler --no-quick-import --plugindir "$(TargetDir)qt6\plugins" --translationdir "$(TargetDir)qt6\translations" $(RpcS3QtDeployMode) "$(TargetPath)"
+if errorlevel 1 exit /b 1
+xcopy /y /d "$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" "$(OutDir)"
+if errorlevel 1 exit /b 1</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' == 'rpcs3_test'">
+    <PostBuildEvent>
+      <Command>"$(QTDIR)\bin\windeployqt6.exe" --no-compiler-runtime --no-opengl-sw --no-patchqt --no-translations --no-system-d3d-compiler --no-system-dxc-compiler --no-ffmpeg --no-quick-import --plugindir "$(TargetDir)qt6\plugins" $(RpcS3QtDeployMode) "$(TargetPath)"
+if errorlevel 1 exit /b 1
+xcopy /y /d "$(OpenCvBuildDir)\x64\bin\$(OpenCvWorld).dll" "$(OutDir)"
+if errorlevel 1 exit /b 1</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+</Project>
