@@ -1543,7 +1543,7 @@ usz package_reader::decrypt(u64 offset, u64 size, const uchar* key, std::span<u8
 			aes_crypt_ecb(&ctx, AES_ENCRYPT, reinterpret_cast<const u8*>(&input), reinterpret_cast<u8*>(&key));
 
 			const u128 v = read_from_ptr<u128>(local_buf, i * sizeof(u128));
-			write_to_ptr<u128>(local_buf, i * sizeof(u128), v ^ read_from_ptr<u128>(key.data()));
+			write_to_ptr<u128>(local_buf, i * sizeof(u128), v ^ key);
 		}
 
 		break;
