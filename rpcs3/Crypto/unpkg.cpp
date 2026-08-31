@@ -952,16 +952,7 @@ bool package_reader::fill_data(std::map<std::string, install_entry*>& all_instal
 		default:
 		{
 			// TODO: check for valid utf8 characters
-			std::error_code ec;
-			std::filesystem::path normalized_path = std::filesystem::weakly_canonical(path, ec);
-
-			if (ec)
-			{
-				pkg_log.warning("Failed to canonicalize package path '%s' (%s); falling back to lexical normalization.", path, ec.message());
-				normalized_path = std::filesystem::path(path).lexically_normal();
-			}
-
-			const std::string true_path = normalized_path.string();
+			const std::string true_path = std::filesystem::path(path).lexically_normal().string();
 			if (true_path.empty())
 			{
 				num_failures++;
@@ -1552,7 +1543,7 @@ usz package_reader::decrypt(u64 offset, u64 size, const uchar* key, std::span<u8
 			aes_crypt_ecb(&ctx, AES_ENCRYPT, reinterpret_cast<const u8*>(&input), reinterpret_cast<u8*>(&key));
 
 			const u128 v = read_from_ptr<u128>(local_buf, i * sizeof(u128));
-			write_to_ptr<u128>(local_buf, i * sizeof(u128), v ^ key);
+			write_to_ptr<u128>(local_buf, i * sizeof(u128), v ^ read_from_ptr<u128>(key.data()));
 		}
 
 		break;
