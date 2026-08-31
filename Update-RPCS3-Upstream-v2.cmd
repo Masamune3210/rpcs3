@@ -229,8 +229,13 @@ Or abandon it with:
     Write-Host
 
     Write-Host 'Fetching upstream and origin...'
-    Invoke-Git -Arguments @('fetch', 'upstream', '--prune') | Out-Null
-    Invoke-Git -Arguments @('fetch', 'origin', '--prune') | Out-Null
+    # Fetch only the superproject here. Some RPCS3 refs point at historical
+    # submodule commits that their upstream repositories no longer advertise;
+    # recursively fetching submodules turns an otherwise successful top-level
+    # fetch into a fatal error. Submodules are handled by the checked-out
+    # superproject separately, so force recursion off regardless of local Git config.
+    Invoke-Git -Arguments @('fetch', 'upstream', '--prune', '--no-recurse-submodules') | Out-Null
+    Invoke-Git -Arguments @('fetch', 'origin', '--prune', '--no-recurse-submodules') | Out-Null
 
     if (-not (Test-GitRef -Ref $upstreamRemoteRef)) {
         throw "$upstreamRemoteRef was not found after fetching."
